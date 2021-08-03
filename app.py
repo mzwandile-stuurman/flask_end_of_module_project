@@ -41,10 +41,10 @@ def init_post_table():
 
 def product_table():
     with sqlite3.connect('Point_of_Sale.db') as conn:
-        conn.execute("CREATE TABLE IF NOT EXISTS products (id INTEGER PRIMARY KEY AUTOINCREMENT,"
+        conn.execute("CREATE TABLE IF NOT EXISTS product (id INTEGER PRIMARY KEY AUTOINCREMENT,"
                      "product_name TEXT NOT NULL,"
                      "price TEXT NOT NULL,"
-                     "description TEXT NOT NULL, quantity TEXT NOT NULL)")
+                     "description TEXT NOT NULL, date TEXT NOT NULL)")
     print("Product table created successfully.")
 
 
@@ -101,6 +101,10 @@ def login():
     #password = request.form['password']
     return render_template('/login.html')
 
+@app.route('/enter-login/', methods = ['POST','GET'])
+def register():
+    return render_template('user-register.html')
+
 
 
 @app.route('/user-registration/', methods=["POST"])
@@ -130,22 +134,23 @@ def user_registration():
         return response
 
 
-@app.route('/create-Point_of_Sale/', methods=["POST"])
+@app.route('/create-products/', methods=["POST"])
 @jwt_required()
 def create_Point_of_Sale():
     response = {}
 
     if request.method == "POST":
-        title = request.form['title']
-        content = request.form['content']
+        prod_name = request.form['prod_name']
+        price = request.form['price']
+        description = request.form['description']
         date_created = datetime.datetime.now()
 
         with sqlite3.connect('Point_of_Sale.db') as conn:
             cursor = conn.cursor()
-            cursor.execute("INSERT INTO post("
-                           "title,"
-                           "content,"
-                           "date_created) VALUES(?, ?, ?)", (title, content, date_created))
+            cursor.execute("INSERT INTO product("
+                           "product_name,"
+                           "price,"
+                           "description,date) VALUES(?, ?, ?, ?)", (prod_name, price, description,date_created))
             conn.commit()
             response["status_code"] = 201
             response['description'] = "Point_of_Sale post added succesfully"

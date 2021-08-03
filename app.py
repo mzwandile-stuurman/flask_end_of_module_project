@@ -147,6 +147,7 @@ def create_Point_of_Sale():
 
         with sqlite3.connect('Point_of_Sale.db') as conn:
             cursor = conn.cursor()
+            cursor.row_factory = sqlite3.Row
             cursor.execute("INSERT INTO product("
                            "product_name,"
                            "price,"
@@ -166,13 +167,14 @@ def show_products():
 
 
 @app.route('/get-Point_of_Sales/', methods=["GET"])
+
 def get_Point_of_Sales():
     response = {}
     with sqlite3.connect("Point_of_Sale.db") as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM user")
-
+        cursor.execute("SELECT * FROM product")
         posts = cursor.fetchall()
+        rowDict = dict(zip([c[0] for c in cursor.description], co))
 
     response['status_code'] = 200
     response['data'] = posts

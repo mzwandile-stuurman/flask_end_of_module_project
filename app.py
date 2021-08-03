@@ -147,7 +147,6 @@ def create_Point_of_Sale():
 
         with sqlite3.connect('Point_of_Sale.db') as conn:
             cursor = conn.cursor()
-            cursor.row_factory = sqlite3.Row
             cursor.execute("INSERT INTO product("
                            "product_name,"
                            "price,"
@@ -167,37 +166,37 @@ def show_products():
 
 
 @app.route('/get-Point_of_Sales/', methods=["GET"])
-
 def get_Point_of_Sales():
     response = {}
     with sqlite3.connect("Point_of_Sale.db") as conn:
         cursor = conn.cursor()
+        cursor.row_factory = sqlite3.Row
         cursor.execute("SELECT * FROM product")
         posts = cursor.fetchall()
-        rowDict = dict(zip([c[0] for c in cursor.description], co))
+        accumulator = []
+
+        for i in posts:
+           accumulator.append({k: i[k] for k in i.keys()})
 
     response['status_code'] = 200
-    response['data'] = posts
-    return response
+    response['data'] = tuple(accumulator)
+    return jsonify(response)
 
 
-
-@app.route("/delete-post/<int:post_id>")
+@app.route("/delete-product/<int:post_id>")
 @jwt_required()
-def delete_post(post_id):
+def delete_product(post_id):
     response = {}
     with sqlite3.connect("Point_of_Sale.db") as conn:
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM post WHERE id=" + str(post_id))
+        cursor.execute("DELETE FROM product WHERE id=" + str(post_id))
         conn.commit()
         response['status_code'] = 200
-        response['message'] = "Point_of_Sale post deleted successfully."
+        response['message'] = "Product post deleted successfully."
     return response
 
+@app.route('/update-product/<int:post_id>/', methods=["PUT"])
 
-
-@app.route('/edit-post/<int:post_id>/', methods=["PUT"])
-@jwt_required()
 def edit_post(post_id):
     response = {}
 
@@ -206,24 +205,37 @@ def edit_post(post_id):
             incoming_data = dict(request.json)
             put_data = {}
 
-            if incoming_data.get("title") is not None:
-                put_data["title"] = incoming_data.get("title")
+            if incoming_data.get("price") is not None:
+                put_data["price"] = incoming_data.get("price")
                 with sqlite3.connect('Point_of_Sale.db') as conn:
                     cursor = conn.cursor()
-                    cursor.execute("UPDATE post SET title =? WHERE id=?", (put_data["title"], post_id))
+                    cursor.execute("UPDATE product SET price =? WHERE id=?", (put_data["price"], post_id))
                     conn.commit()
-                    response['message'] = "Update was successfully"
+                    response['message'] = "Update was successful"
                     response['status_code'] = 200
-            if incoming_data.get("content") is not None:
-                put_data['content'] = incoming_data.get('content')
+            if incoming_data.get("product_name") is not None:
+                put_data['product_name'] = incoming_data.get('product_name')
 
                 with sqlite3.connect('Point_of_Sale.db') as conn:
                     cursor = conn.cursor()
-                    cursor.execute("UPDATE post SET content =? WHERE id=?", (put_data["content"], post_id))
+                    cursor.execute("UPDATE product SET product_name =? WHERE id=?", (put_data["product_name"], post_id))
                     conn.commit()
 
                     response["content"] = "Content updated successfully"
                     response["status_code"] = 200
+
+            if incoming_data.get("description") is not None:
+                put_data['description'] = incoming_data.get('description')
+
+                with sqlite3.connect('Point_of_Sale.db') as conn:
+                    cursor = conn.cursor()
+                    cursor.execute("UPDATE product SET description =? WHERE id=?", (put_data["description"], post_id))
+                    conn.commit()
+
+                    response["content"] = "Content updated successfully"
+                    response["status_code"] = 200
+
+
     return response
 
 
@@ -233,7 +245,7 @@ def get_post(post_id):
 
     with sqlite3.connect("Point_of_Sale.db") as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM post WHERE id=" + str(post_id))
+        cursor.execute("SELECT * FROM products WHERE id=" + str(post_id))
 
         response["status_code"] = 200
         response["description"] = "Point_of_Sale post retrieved successfully"

@@ -196,7 +196,6 @@ def delete_product(post_id):
     return response
 
 @app.route('/update-product/<int:post_id>/', methods=["PUT"])
-
 def edit_post(post_id):
     response = {}
 

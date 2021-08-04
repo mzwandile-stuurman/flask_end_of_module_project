@@ -105,7 +105,9 @@ def login():
 def register():
     return render_template('user-register.html')
 
-
+@app.route('/get-image')
+def image1():
+    return render_template('image1_file.html')
 
 @app.route('/user-registration/', methods=["POST"])
 def user_registration():
@@ -160,8 +162,10 @@ def create_Point_of_Sale():
 
 @app.route('/products/')
 def show_products():
-    products = [{'id':0,'Product_name':'Yocco speed point','Price':300,'Description':'The best speed point'},{'id':1,'Product_name':'Yocco card machine','Description':'Best card machin'}]
-    return jsonify(products)
+    print(request.is_json)
+
+    return dict(request.json)
+
 
 
 
@@ -181,6 +185,25 @@ def get_Point_of_Sales():
     response['status_code'] = 200
     response['data'] = tuple(accumulator)
     return jsonify(response)
+
+@app.route('/get-user/',methods=['GET'])
+def view_profile():
+    response = {}
+    with sqlite3.connect("Point_of_Sale.db") as conn:
+        cursor = conn.cursor()
+        cursor.row_factory = sqlite3.Row
+        cursor.execute("SELECT * FROM user")
+        posts = cursor.fetchall()
+        accumulator = []
+
+        for i in posts:
+           accumulator.append({k: i[k] for k in i.keys()})
+
+    response['status_code'] = 200
+    response['data'] = tuple(accumulator)
+    return jsonify(response)
+
+
 
 
 @app.route("/delete-product/<int:post_id>")
@@ -202,6 +225,7 @@ def edit_post(post_id):
     if request.method == "PUT":
         with sqlite3.connect('Point_of_Sale.db') as conn:
             incoming_data = dict(request.json)
+
             put_data = {}
 
             if incoming_data.get("price") is not None:
@@ -234,23 +258,10 @@ def edit_post(post_id):
                     response["content"] = "Content updated successfully"
                     response["status_code"] = 200
 
-
     return response
 
 
-@app.route('/get-post/<int:post_id>/', methods=["GET"])
-def get_post(post_id):
-    response = {}
 
-    with sqlite3.connect("Point_of_Sale.db") as conn:
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM products WHERE id=" + str(post_id))
-
-        response["status_code"] = 200
-        response["description"] = "Point_of_Sale post retrieved successfully"
-        response["data"] = cursor.fetchone()
-
-    return jsonify(response)
 
 if __name__ == '__main__':
     app.run(debug=True)

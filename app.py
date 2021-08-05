@@ -205,7 +205,6 @@ def view_profile():
 
 
 
-
 @app.route("/delete-product/<int:post_id>")
 @jwt_required()
 def delete_product(post_id):
@@ -259,7 +258,6 @@ def edit_post(post_id):
                     response["status_code"] = 200
 
     return response
-
 
 
 

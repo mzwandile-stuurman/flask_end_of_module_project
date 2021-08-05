@@ -1,16 +1,19 @@
 import sqlite3
 from flask import request
 from flask import jsonify
-def get_Point_of_Sales():
-    response = {}
-    with sqlite3.connect("Point_of_Sale.db") as conn:
-        cursor = conn.cursor()
-        cursor.row_factory = sqlite3.Row
-        cursor.execute("SELECT * FROM product")
-        posts = cursor.fetchall()
+con = sqlite3.connect("Point_of_Sale.db")
 
-    print(request.json)
-get_Point_of_Sales()
+cursor = con.cursor()
+
+
+cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+#cursor.execute("DROP TABLE products")
+#print('Table dropped')
+
+
+
+print(cursor.fetchall())
+
 
 
 

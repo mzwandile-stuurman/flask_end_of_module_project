@@ -7,3 +7,4 @@ MarkupSafe==2.0.1
 Werkzeug==2.0.1
 PyJWT==1.4.2
 flask-jwt==0.3.2
+CORS==1.16.0

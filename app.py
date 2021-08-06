@@ -110,14 +110,10 @@ jwt = JWT(app, authenticate, identity)
 @jwt_required()
 def protected():
     return '%s' % current_identity
-
-
-@app.route('/mail/', methods=['GET','POST'])
-def login():
-    msg = Message('Hello Message', sender='stuurmanmzwandile@gmail.com', recipients=['siyanjomeni@gmail.com'])
-    msg.body = "My email using Flask"
-    mail.send(msg)
-    return "Message send"
+# home page
+@app.route('/')
+def welcome_page():
+    return render_template('image1_file.html')
 
 # end-point to register a user
 @app.route('/user-registration/', methods=["POST"])
@@ -159,7 +155,7 @@ def user_registration():
 
 # create a product
 @app.route('/create-products/', methods=["POST"])
-@jwt_required()
+@jwt_required() # authantication required
 def create_Point_of_Sale():
     response = {}
 
@@ -222,7 +218,7 @@ def view_all_users():
     response['data'] = tuple(accumulator)
     return jsonify(response)
 
-
+# get a single user
 @app.route("/single-user/<int:user_id>", methods=['GET'])
 def get_single_user(user_id):
     response = {}
@@ -239,6 +235,7 @@ def get_single_user(user_id):
         response['message'] = " User selected successfully"
     return jsonify(response)
 
+# get single product
 @app.route("/single-product/<int:post_id>", methods=['GET'])
 def get_single_product(post_id):
     response = {}
@@ -256,7 +253,7 @@ def get_single_product(post_id):
         response['message'] = "Product successfully."
     return jsonify(response)
 
-
+# delete product by id
 @app.route("/delete-product/<int:post_id>")
 @jwt_required()
 def delete_product(post_id):
@@ -269,6 +266,7 @@ def delete_product(post_id):
         response['message'] = "Product post deleted successfully."
     return response
 
+# update product by a particula column
 @app.route('/update-product/<int:post_id>/', methods=["PUT"])
 def edit_post(post_id):
     response = {}
@@ -279,7 +277,7 @@ def edit_post(post_id):
 
             put_data = {}
 
-            if incoming_data.get("price") is not None:
+            if incoming_data.get("price") is not None: # check if the updated column is price
                 put_data["price"] = incoming_data.get("price")
                 with sqlite3.connect('Point_of_Sale.db') as conn:
                     cursor = conn.cursor()
@@ -311,7 +309,7 @@ def edit_post(post_id):
 
     return response
 
-
+# update a single user
 @app.route('/update-user/<int:post_id>/', methods=["PUT"])
 def edit_user(post_id):
     response = {}
@@ -399,6 +397,6 @@ def edit_user(post_id):
     return response
 
 
-
+# run the app
 if __name__ == '__main__':
     app.run(debug=True)

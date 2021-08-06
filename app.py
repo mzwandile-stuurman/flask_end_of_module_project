@@ -5,6 +5,9 @@ import datetime
 from flask import Flask, request, jsonify, redirect, render_template
 from flask_jwt import JWT, jwt_required, current_identity
 from flask_cors import CORS
+from flask_mail import Mail,Message
+
+
 
 class User(object):
     def __init__(self, id, username, password,user_email,phone_number,address):
@@ -82,6 +85,13 @@ def identity(payload):
 
 
 app = Flask(__name__)
+app.config['MAIL_SERVER']='smtp.gmail.com'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USERNAME'] = 'stuurmanmzwandile@gmail.com'
+app.config['MAIL_PASSWORD'] = 'strmzw001'
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True
+mail = Mail(app)
 CORS(app)
 app.debug = True
 app.config['SECRET_KEY'] = 'super-secret'
@@ -233,7 +243,7 @@ def edit_post(post_id):
                     cursor = conn.cursor()
                     cursor.execute("UPDATE product SET price =? WHERE id=?", (put_data["price"], post_id))
                     conn.commit()
-                    response['message'] = "Update was successful"
+                    response['message'] = "Product price was successful"
                     response['status_code'] = 200
             if incoming_data.get("product_name") is not None:
                 put_data['product_name'] = incoming_data.get('product_name')
@@ -243,7 +253,7 @@ def edit_post(post_id):
                     cursor.execute("UPDATE product SET product_name =? WHERE id=?", (put_data["product_name"], post_id))
                     conn.commit()
 
-                    response["content"] = "Content updated successfully"
+                    response["content"] = "Product name updated successfully"
                     response["status_code"] = 200
 
             if incoming_data.get("description") is not None:
@@ -254,7 +264,7 @@ def edit_post(post_id):
                     cursor.execute("UPDATE product SET description =? WHERE id=?", (put_data["description"], post_id))
                     conn.commit()
 
-                    response["content"] = "Content updated successfully"
+                    response["content"] = "Product description updated successfully"
                     response["status_code"] = 200
 
     return response

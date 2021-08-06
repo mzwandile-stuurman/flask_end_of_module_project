@@ -223,7 +223,7 @@ def view_all_users():
     return jsonify(response)
 
 
-@app.route("/single-user/<int:user_id>")
+@app.route("/single-user/<int:user_id>", methods=['GET'])
 def get_single_user(user_id):
     response = {}
     with sqlite3.connect("Point_of_Sale.db") as conn:

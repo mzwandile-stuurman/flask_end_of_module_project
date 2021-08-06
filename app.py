@@ -1,14 +1,18 @@
+####-------- MZWANDILE STUURMAN FALSK END OF MODULE ----------####
+
+# Importing all necessary modules
 import hmac
 import sqlite3
 import datetime
-
 from flask import Flask, request, jsonify, redirect, render_template
 from flask_jwt import JWT, jwt_required, current_identity
 from flask_cors import CORS
 from flask_mail import Mail,Message
+from smtplib import SMTPRecipientsRefused, SMTPAuthenticationError
 
 
 
+# defining class for user authantication
 class User(object):
     def __init__(self, id, username, password,user_email,phone_number,address):
         self.id = id
@@ -20,7 +24,7 @@ class User(object):
 
 
 
-
+# creating a database table for user registration
 def init_user_table():
     conn = sqlite3.connect('Point_of_Sale.db')
     print("Opened database successfully")
@@ -33,8 +37,8 @@ def init_user_table():
     print("user table created successfully")
     conn.close()
 
-
-def init_post_table():
+# creating a login table
+def init_login_table():
     with sqlite3.connect('Point_of_Sale.db') as conn:
         conn.execute("CREATE TABLE IF NOT EXISTS login (id INTEGER PRIMARY KEY AUTOINCREMENT,"
                      "user_email TEXT NOT NULL,"
@@ -42,6 +46,7 @@ def init_post_table():
                      "login_date TEXT NOT NULL)")
     print("Login table created successfully.")
 
+# creating the product table
 def product_table():
     with sqlite3.connect('Point_of_Sale.db') as conn:
         conn.execute("CREATE TABLE IF NOT EXISTS product (id INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -53,8 +58,9 @@ def product_table():
 
 product_table()
 init_user_table()
-init_post_table()
+init_login_table()
 
+# fecth username and surname for user authentication
 def fetch_users():
     with sqlite3.connect('Point_of_Sale.db') as conn:
         cursor = conn.cursor()
@@ -64,31 +70,33 @@ def fetch_users():
         new_data = []
 
         for data in users:
-            new_data.append(User(data[0], data[3], data[4],data[5],data[6],data[7]))
+            new_data.append(User(data[0], data[3], data[4],data[5],data[6],data[7])) # append all data to new_data empty list
     return new_data
 
-users = fetch_users()
+users = fetch_users() # declare users tables to a variable "users"
 
-username_table = { u.username: u for u in users }
-userid_table = { u.id: u for u in users }
+username_table = { u.username: u for u in users } # make a dictionary for username
+userid_table = { u.id: u for u in users } # make a dictionary for user id
 
-
+# set authantication for username and password
 def authenticate(username, password):
     user = username_table.get(username, None)
     if user and hmac.compare_digest(user.password.encode('utf-8'), password.encode('utf-8')):
         return user
 
-
+# identify registered user by user id
 def identity(payload):
     user_id = payload['identity']
     return userid_table.get(user_id, None)
 
 
 app = Flask(__name__)
+
+# setting up flask-mail
 app.config['MAIL_SERVER']='smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
 app.config['MAIL_USERNAME'] = 'stuurmanmzwandile@gmail.com'
-app.config['MAIL_PASSWORD'] = 'strmzw001'
+app.config['MAIL_PASSWORD'] = '@strmzw001'
 app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
 mail = Mail(app)
@@ -96,108 +104,109 @@ CORS(app)
 app.debug = True
 app.config['SECRET_KEY'] = 'super-secret'
 
+#authanticate a loggen in user
 jwt = JWT(app, authenticate, identity)
-
 @app.route('/protected')
 @jwt_required()
 def protected():
     return '%s' % current_identity
 
 
-
-@app.route('/login/', methods=['GET','POST'])
+@app.route('/mail/', methods=['GET','POST'])
 def login():
-    #username = request.form['username']
-    #password = request.form['password']
-    return render_template('/login.html')
+    msg = Message('Hello Message', sender='stuurmanmzwandile@gmail.com', recipients=['siyanjomeni@gmail.com'])
+    msg.body = "My email using Flask"
+    mail.send(msg)
+    return "Message send"
 
-@app.route('/enter-login/', methods = ['POST','GET'])
-def register():
-    return render_template('user-register.html')
-
-@app.route('/get-image')
-def image1():
-    return render_template('image1_file.html')
-
+# end-point to register a user
 @app.route('/user-registration/', methods=["POST"])
 def user_registration():
     response = {}
-
     if request.method == "POST":
-
-        first_name = request.form['first_name']
-        last_name = request.form['last_name']
-        username = request.form['username']
-        password = request.form['password']
-        address = request.form['address']
-        phone_number = request.form['phone_number']
-        user_email = request.form['user_email']
-
-        with sqlite3.connect("Point_of_Sale.db") as conn:
-            cursor = conn.cursor()
-            cursor.execute("INSERT INTO user("
-                           "first_name,"
-                           "last_name,"
-                           "username,"
-                           "password,address,phone_number,user_email) VALUES(?, ?, ?, ?, ?, ?, ?)", (first_name, last_name, username, password,address,phone_number,user_email))
-            conn.commit()
-            response["message"] = "success"
-            response["status_code"] = 201
-        return response
+        try:
 
 
+            first_name = request.form['first_name']
+            last_name = request.form['last_name']
+            username = request.form['username']
+            password = request.form['password']
+            address = request.form['address']
+            phone_number = request.form['phone_number']
+            user_email = request.form['user_email']
+
+            with sqlite3.connect("Point_of_Sale.db") as conn:
+                cursor = conn.cursor()
+                cursor.execute("INSERT INTO user("
+                               "first_name,"
+                               "last_name,"
+                               "username,"
+                               "password,address,phone_number,user_email) VALUES(?, ?, ?, ?, ?, ?, ?)", (first_name, last_name, username, password,address,phone_number,user_email))
+                conn.commit()
+                response["message"] = "success"
+                response["status_code"] = 201
+                msg = Message("Registered successfuly!!", sender = "mzwandilestuurman@gmia.com", recipients=[user_email])
+                msg.body = "Please login  to enjoy our services."
+                return response
+        except SMTPRecipientsRefused:
+            response["message"] = "Invalid email used"
+            response["status_code"] = 401
+            return response
+        except SMTPAuthenticationError:
+            response["message"] = "Incorrect login details"
+            response["status_code"] = 401
+            return response
+
+# create a product
 @app.route('/create-products/', methods=["POST"])
 @jwt_required()
 def create_Point_of_Sale():
     response = {}
 
     if request.method == "POST":
-        prod_name = request.form['prod_name']
-        price = request.form['price']
-        description = request.form['description']
-        date_created = datetime.datetime.now()
+        try:
 
-        with sqlite3.connect('Point_of_Sale.db') as conn:
-            cursor = conn.cursor()
-            cursor.execute("INSERT INTO product("
-                           "product_name,"
-                           "price,"
-                           "description,date) VALUES(?, ?, ?, ?)", (prod_name, price, description,date_created))
-            conn.commit()
-            response["status_code"] = 201
-            response['description'] = "Point_of_Sale post added succesfully"
-        return response
+            prod_name = request.form['prod_name']
+            price = request.form['price']
+            description = request.form['description']
+            date_created = datetime.datetime.now()
+
+            with sqlite3.connect('Point_of_Sale.db') as conn:
+                cursor = conn.cursor()
+                cursor.execute("INSERT INTO product("
+                               "product_name,"
+                               "price,"
+                               "description,date) VALUES(?, ?, ?, ?)", (prod_name, price, description,date_created))
+                conn.commit()
+                response["status_code"] = 201
+                response['description'] = "Point_of_Sale post added succesfully"
+                return response
+        except Exception:
+            response['message'] = "You created an invalid product"
+            response['status_code'] = 400
+            return response
 
 ### Creating products
-
-@app.route('/products/')
-def show_products():
-    print(request.is_json)
-
-    return dict(request.json)
-
-
-
-
 @app.route('/get-Point_of_Sales/', methods=["GET"])
 def get_Point_of_Sales():
     response = {}
     with sqlite3.connect("Point_of_Sale.db") as conn:
         cursor = conn.cursor()
-        cursor.row_factory = sqlite3.Row
+        cursor.row_factory = sqlite3.Row # cursor to capture table headings
         cursor.execute("SELECT * FROM product")
-        posts = cursor.fetchall()
+        posts = cursor.fetchall() # fecth all fields in the product table
         accumulator = []
 
         for i in posts:
-           accumulator.append({k: i[k] for k in i.keys()})
+           accumulator.append({k: i[k] for k in i.keys()}) # return table a dictionary
 
     response['status_code'] = 200
-    response['data'] = tuple(accumulator)
+    response['data'] = tuple(accumulator) # insert data into response
     return jsonify(response)
 
-@app.route('/get-user/',methods=['GET'])
-def view_profile():
+# end-point to get all users
+@app.route('/get-users/',methods=['GET'])
+def view_all_users():
     response = {}
     with sqlite3.connect("Point_of_Sale.db") as conn:
         cursor = conn.cursor()
@@ -213,6 +222,39 @@ def view_profile():
     response['data'] = tuple(accumulator)
     return jsonify(response)
 
+
+@app.route("/single-user/<int:user_id>")
+def get_single_user(user_id):
+    response = {}
+    with sqlite3.connect("Point_of_Sale.db") as conn:
+        cursor = conn.cursor()
+        cursor.row_factory = sqlite3.Row
+        cursor.execute("SELECT * FROM user WHERE user_id=" + str(user_id))
+        posts = cursor.fetchall()
+        accumulator = []
+        for i in posts:
+           accumulator.append({k: i[k] for k in i.keys()})
+        response['status_code'] = 200
+        response['data'] = tuple(accumulator)
+        response['message'] = " User selected successfully"
+    return jsonify(response)
+
+@app.route("/single-product/<int:post_id>", methods=['GET'])
+def get_single_product(post_id):
+    response = {}
+    with sqlite3.connect("Point_of_Sale.db") as conn:
+        cursor = conn.cursor()
+        cursor.row_factory = sqlite3.Row
+        cursor.execute("SELECT * FROM product WHERE id=" + str(post_id))
+        posts = cursor.fetchall()
+        accumulator = []
+        for i in posts:
+           accumulator.append({k: i[k] for k in i.keys()})
+
+        response['status_code'] = 200
+        response['data'] = tuple(accumulator)
+        response['message'] = "Product successfully."
+    return jsonify(response)
 
 
 @app.route("/delete-product/<int:post_id>")

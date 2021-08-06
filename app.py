@@ -312,6 +312,93 @@ def edit_post(post_id):
     return response
 
 
+@app.route('/update-user/<int:post_id>/', methods=["PUT"])
+def edit_user(post_id):
+    response = {}
+
+    if request.method == "PUT":
+        with sqlite3.connect('Point_of_Sale.db') as conn:
+            incoming_data = dict(request.json)
+
+            put_data = {}
+
+            if incoming_data.get("first_name") is not None:
+                put_data["first_name"] = incoming_data.get("first_name")
+                with sqlite3.connect('Point_of_Sale.db') as conn:
+                    cursor = conn.cursor()
+                    cursor.execute("UPDATE user SET first_name =? WHERE user_id=?", (put_data["first_name"], post_id))
+                    conn.commit()
+                    response['message'] = "Name updated successfully"
+                    response['status_code'] = 200
+            if incoming_data.get("last_name") is not None:
+                put_data['last_name'] = incoming_data.get('last_name')
+
+                with sqlite3.connect('Point_of_Sale.db') as conn:
+                    cursor = conn.cursor()
+                    cursor.execute("UPDATE user SET last_name =? WHERE user_id=?", (put_data["last_name"], post_id))
+                    conn.commit()
+
+                    response["content"] = "Last name updated successfully"
+                    response["status_code"] = 200
+
+            if incoming_data.get("username") is not None:
+                put_data['username'] = incoming_data.get('username')
+
+                with sqlite3.connect('Point_of_Sale.db') as conn:
+                    cursor = conn.cursor()
+                    cursor.execute("UPDATE user SET username =? WHERE user_id=?", (put_data["username"], post_id))
+                    conn.commit()
+
+                    response["content"] = "User name updated successfully"
+                    response["status_code"] = 200
+
+            if incoming_data.get("password") is not None:
+                put_data['password'] = incoming_data.get('password')
+
+                with sqlite3.connect('Point_of_Sale.db') as conn:
+                    cursor = conn.cursor()
+                    cursor.execute("UPDATE user SET password =? WHERE user_id=?", (put_data["password"], post_id))
+                    conn.commit()
+
+                    response["content"] = "Password updated successfully"
+                    response["status_code"] = 200
+
+            if incoming_data.get("address") is not None:
+                put_data['address'] = incoming_data.get('address')
+
+                with sqlite3.connect('Point_of_Sale.db') as conn:
+                    cursor = conn.cursor()
+                    cursor.execute("UPDATE user SET address =? WHERE user_id=?", (put_data["address"], post_id))
+                    conn.commit()
+
+                    response["content"] = "Address updated successfully"
+                    response["status_code"] = 200
+
+            if incoming_data.get("phone_number") is not None:
+                put_data['phone_number'] = incoming_data.get('phone_number')
+
+                with sqlite3.connect('Point_of_Sale.db') as conn:
+                    cursor = conn.cursor()
+                    cursor.execute("UPDATE user SET phone_number =? WHERE user_id=?", (put_data["phone_number"], post_id))
+                    conn.commit()
+
+                    response["content"] = "Phone number updated successfully"
+                    response["status_code"] = 200
+
+            if incoming_data.get("user_email") is not None:
+                put_data['user_email'] = incoming_data.get('user_email')
+
+                with sqlite3.connect('Point_of_Sale.db') as conn:
+                    cursor = conn.cursor()
+                    cursor.execute("UPDATE user SET user_email =? WHERE user_id=?", (put_data["user_email"], post_id))
+                    conn.commit()
+
+                    response["content"] = "email updated successfully"
+                    response["status_code"] = 200
+
+    return response
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

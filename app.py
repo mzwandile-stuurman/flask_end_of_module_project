@@ -51,8 +51,8 @@ def product_table():
     with sqlite3.connect('Point_of_Sale.db') as conn:
         conn.execute("CREATE TABLE IF NOT EXISTS product (id INTEGER PRIMARY KEY AUTOINCREMENT,"
                      "product_name TEXT NOT NULL,"
-                     "price TEXT NOT NULL,"
-                     "description TEXT NOT NULL, date TEXT NOT NULL)")
+                     "price INT NOT NULL,"
+                     "description TEXT NOT NULL, date TEXT NOT NULL, image TEXT NOT NULL)")
     print("Product table created successfully.")
 
 
@@ -113,7 +113,8 @@ def protected():
 # home page
 @app.route('/')
 def welcome_page():
-    return render_template('image1_file.html')
+    return "<h1>Welcome to Yocco</h1>"
+        #render_template('image1_file.html')
 
 # end-point to register a user
 @app.route('/user-registration/', methods=["POST"])
@@ -155,7 +156,7 @@ def user_registration():
 
 # create a product
 @app.route('/create-products/', methods=["POST"])
-@jwt_required() # authantication required
+@jwt_required # authantication required
 def create_Point_of_Sale():
     response = {}
 
@@ -165,6 +166,7 @@ def create_Point_of_Sale():
             prod_name = request.form['prod_name']
             price = request.form['price']
             description = request.form['description']
+            image = request.form['image']
             date_created = datetime.datetime.now()
 
             with sqlite3.connect('Point_of_Sale.db') as conn:
@@ -172,7 +174,7 @@ def create_Point_of_Sale():
                 cursor.execute("INSERT INTO product("
                                "product_name,"
                                "price,"
-                               "description,date) VALUES(?, ?, ?, ?)", (prod_name, price, description,date_created))
+                               "description,image,date) VALUES(?, ?, ?, ?,?)", (prod_name, price, description,image,date_created))
                 conn.commit()
                 response["status_code"] = 201
                 response['description'] = "Point_of_Sale post added succesfully"

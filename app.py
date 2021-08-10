@@ -122,8 +122,6 @@ def user_registration():
     response = {}
     if request.method == "POST":
         try:
-
-
             first_name = request.form['first_name']
             last_name = request.form['last_name']
             username = request.form['username']
@@ -153,6 +151,37 @@ def user_registration():
             response["message"] = "Incorrect login details"
             response["status_code"] = 401
             return response
+
+@app.route('/user-login/', methods=["POST"])
+def user_login():
+    response = {}
+    if request.method == "POST":
+        try:
+
+            user_email = request.form['user_email']
+            password = request.form['password']
+            date_created = datetime.datetime.now()
+
+            with sqlite3.connect("Point_of_Sale.db") as conn:
+                cursor = conn.cursor()
+                cursor.execute("INSERT INTO login("
+                               "user_email,"
+                               "password,"
+                               "login_date) VALUES(?, ?, ?)", (user_email, password, date_created))
+                conn.commit()
+                response["message"] = "success"
+                response["status_code"] = 201
+
+                return response
+        except SMTPRecipientsRefused:
+            response["message"] = "Invalid email used"
+            response["status_code"] = 401
+            return response
+        except SMTPAuthenticationError:
+            response["message"] = "Incorrect login details"
+            response["status_code"] = 401
+            return response
+
 
 # create a product
 @app.route('/create-products/', methods=["POST"])

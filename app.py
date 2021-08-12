@@ -164,6 +164,8 @@ def user_login():
 
             with sqlite3.connect("Point_of_Sale.db") as conn:
                 cursor = conn.cursor()
+
+
                 cursor.execute("INSERT INTO login("
                                "user_email,"
                                "password,"
@@ -185,7 +187,7 @@ def user_login():
 
 # create a product
 @app.route('/create-products/', methods=["POST"])
-@jwt_required # authantication required
+#@jwt_required # authantication required
 def create_Point_of_Sale():
     response = {}
 

@@ -288,7 +288,7 @@ def get_single_product(post_id):
 
 # delete product by id
 @app.route("/delete-product/<int:post_id>")
-@jwt_required()
+#@jwt_required()
 def delete_product(post_id):
     response = {}
     with sqlite3.connect("Point_of_Sale.db") as conn:

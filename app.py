@@ -9,6 +9,8 @@ from flask_jwt import JWT, jwt_required, current_identity
 from flask_cors import CORS
 from flask_mail import Mail,Message
 from smtplib import SMTPRecipientsRefused, SMTPAuthenticationError
+from werkzeug.utils import redirect
+
 
 
 
@@ -174,7 +176,7 @@ def user_login():
                 response["message"] = "success"
                 response["status_code"] = 201
 
-                return redirect('https://hopeful-dijkstra-5cff7e.netlify.app/products.html')
+                return  response and redirect('https://hopeful-dijkstra-5cff7e.netlify.app/products.html')
         except SMTPRecipientsRefused:
             response["message"] = "Invalid email used"
             response["status_code"] = 401
@@ -209,7 +211,7 @@ def create_Point_of_Sale():
                 conn.commit()
                 response["status_code"] = 201
                 response['description'] = "Product added succesfully"
-                return response
+                return response and redirect('https://hopeful-dijkstra-5cff7e.netlify.app/products.html')
 
         except Exception:
             response['message'] = "You created an invalid product"
@@ -299,6 +301,26 @@ def delete_product(post_id):
         response['status_code'] = 200
         response['message'] = "Product post deleted successfully."
     return response
+
+@app.route("/delete-product-front/", methods=['POST'])
+#@jwt_required()
+def delete_product_front():
+    response = {}
+    if request.method == "POST":
+        try:
+
+            post_id = request.form['id']
+            with sqlite3.connect("Point_of_Sale.db") as conn:
+                cursor = conn.cursor()
+                cursor.execute("DELETE FROM product WHERE id=" + str(post_id))
+                conn.commit()
+                response['status_code'] = 200
+                response['message'] = "Product post deleted successfully."
+            return response
+        except Exception:
+            response['message'] = "You created an invalid product"
+            response['status_code'] = 400
+            return response
 
 # update product by a particula column
 @app.route('/update-product/<int:post_id>/', methods=["PUT"])

@@ -174,7 +174,7 @@ def user_login():
                 response["message"] = "success"
                 response["status_code"] = 201
 
-                return response
+                return redirect('https://hopeful-dijkstra-5cff7e.netlify.app/products.html')
         except SMTPRecipientsRefused:
             response["message"] = "Invalid email used"
             response["status_code"] = 401

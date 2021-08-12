@@ -144,7 +144,7 @@ def user_registration():
                 response["status_code"] = 201
                 msg = Message("Registered successfuly!!", sender = "mzwandilestuurman@gmia.com", recipients=[user_email])
                 msg.body = "Please login  to enjoy our services."
-                return response
+                return response and redirect('https://hopeful-dijkstra-5cff7e.netlify.app/index.html')
         except SMTPRecipientsRefused:
             response["message"] = "Invalid email used"
             response["status_code"] = 401
@@ -300,7 +300,7 @@ def delete_product(post_id):
         conn.commit()
         response['status_code'] = 200
         response['message'] = "Product post deleted successfully."
-    return response
+    return response and redirect('https://hopeful-dijkstra-5cff7e.netlify.app/delete.html')
 
 @app.route("/delete-product-front/", methods=['POST'])
 #@jwt_required()

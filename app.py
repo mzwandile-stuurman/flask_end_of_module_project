@@ -208,8 +208,9 @@ def create_Point_of_Sale():
                                "description,image,date) VALUES(?, ?, ?, ?,?)", (prod_name, price, description,image,date_created))
                 conn.commit()
                 response["status_code"] = 201
-                response['description'] = "Point_of_Sale post added succesfully"
+                response['description'] = "Product added succesfully"
                 return response
+
         except Exception:
             response['message'] = "You created an invalid product"
             response['status_code'] = 400

@@ -200,10 +200,10 @@ def create_Point_of_Sale():
     if request.method == "POST":
         try:
 
-            prod_name = request.form['prod_name']
-            price = request.form['price']
-            description = request.form['description']
-            image = request.form['image']
+            prod_name = request.json['prod_name']
+            price = request.json['price']
+            description = request.json['description']
+            image = request.json['image']
             date_created = datetime.datetime.now()
 
             with sqlite3.connect('Point_of_Sale.db') as conn:

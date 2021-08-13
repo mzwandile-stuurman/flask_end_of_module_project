@@ -144,7 +144,7 @@ def user_registration():
                 response["status_code"] = 201
                 msg = Message("Registered successfuly!!", sender = "mzwandilestuurman@gmia.com", recipients=[user_email])
                 msg.body = "Please login  to enjoy our services."
-                return response and redirect('https://hopeful-dijkstra-5cff7e.netlify.app/index.html')
+                return response
         except SMTPRecipientsRefused:
             response["message"] = "Invalid email used"
             response["status_code"] = 401
@@ -176,7 +176,7 @@ def user_login():
                 response["message"] = "success"
                 response["status_code"] = 201
 
-                return  response and redirect('https://hopeful-dijkstra-5cff7e.netlify.app/products.html')
+                return  response
         except SMTPRecipientsRefused:
             response["message"] = "Invalid email used"
             response["status_code"] = 401
@@ -211,7 +211,7 @@ def create_Point_of_Sale():
                 conn.commit()
                 response["status_code"] = 201
                 response['description'] = "Product added succesfully"
-                return response and redirect('https://hopeful-dijkstra-5cff7e.netlify.app/products.html')
+                return response
 
         except Exception:
             response['message'] = "You created an invalid product"
@@ -300,7 +300,7 @@ def delete_product(post_id):
         conn.commit()
         response['status_code'] = 200
         response['message'] = "Product post deleted successfully."
-    return response and redirect('https://hopeful-dijkstra-5cff7e.netlify.app/delete.html')
+    return response
 
 @app.route("/delete-product-front/", methods=['POST'])
 #@jwt_required()

@@ -109,6 +109,7 @@ app.config['JWT_EXPIRATION_DELTA'] = datetime.timedelta(days=2)
 
 #authanticate a loggen in user
 jwt = JWT(app, authenticate, identity)
+
 @app.route('/protected')
 @jwt_required()
 def protected():

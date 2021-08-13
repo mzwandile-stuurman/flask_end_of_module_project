@@ -6,7 +6,7 @@ import sqlite3
 import datetime
 from flask import Flask, request, jsonify, redirect, render_template
 from flask_jwt import JWT, jwt_required, current_identity
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 from flask_mail import Mail,Message
 from smtplib import SMTPRecipientsRefused, SMTPAuthenticationError
 from werkzeug.utils import redirect
@@ -105,6 +105,7 @@ mail = Mail(app)
 CORS(app)
 app.debug = True
 app.config['SECRET_KEY'] = 'super-secret'
+app.config['JWT_EXPIRATION_DELTA'] = datetime.timedelta(days=2)
 
 #authanticate a loggen in user
 jwt = JWT(app, authenticate, identity)
@@ -120,17 +121,18 @@ def welcome_page():
 
 # end-point to register a user
 @app.route('/user-registration/', methods=["POST"])
+@cross_origin()
 def user_registration():
     response = {}
     if request.method == "POST":
         try:
-            first_name = request.form['first_name']
-            last_name = request.form['last_name']
-            username = request.form['username']
-            password = request.form['password']
-            address = request.form['address']
-            phone_number = request.form['phone_number']
-            user_email = request.form['user_email']
+            first_name = request.json['first_name']
+            last_name = request.json['last_name']
+            username = request.json['username']
+            password = request.json['password']
+            address = request.json['address']
+            phone_number = request.json['phone_number']
+            user_email = request.json['user_email']
 
             with sqlite3.connect("Point_of_Sale.db") as conn:
                 cursor = conn.cursor()
@@ -190,6 +192,7 @@ def user_login():
 # create a product
 @app.route('/create-products/', methods=["POST"])
 #@jwt_required # authantication required
+@cross_origin()
 def create_Point_of_Sale():
     response = {}
 
@@ -304,6 +307,7 @@ def delete_product(post_id):
 
 @app.route("/delete-product-front/", methods=['POST'])
 #@jwt_required()
+@cross_origin()
 def delete_product_front():
     response = {}
     if request.method == "POST":
@@ -324,6 +328,7 @@ def delete_product_front():
 
 # update product by a particula column
 @app.route('/update-product/<int:post_id>/', methods=["PUT"])
+@cross_origin()
 def edit_post(post_id):
     response = {}
 

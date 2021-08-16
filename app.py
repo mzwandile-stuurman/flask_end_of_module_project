@@ -373,6 +373,7 @@ def edit_post(post_id):
 
 # update a single user
 @app.route('/update-user/<int:post_id>/', methods=["PUT"])
+@cross_origin()
 def edit_user(post_id):
     response = {}
 

@@ -314,7 +314,7 @@ def delete_product_front():
     if request.method == "POST":
         try:
 
-            post_id = request.form['id']
+            post_id = request.json['id']
             with sqlite3.connect("Point_of_Sale.db") as conn:
                 cursor = conn.cursor()
                 cursor.execute("DELETE FROM product WHERE id=" + str(post_id))

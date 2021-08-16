@@ -314,10 +314,10 @@ def delete_product_front():
     if request.method == "POST":
         try:
 
-            post_id = request.form['id']
+            post_id = request.json['id']
             with sqlite3.connect("Point_of_Sale.db") as conn:
                 cursor = conn.cursor()
-                cursor.execute("DELETE FROM product WHERE id=" + str(post_id))
+                cursor.execute("DELETE FROM product WHERE id='" + str(post_id) + "'")
                 conn.commit()
                 response['status_code'] = 200
                 response['message'] = "Product post deleted successfully."
@@ -373,6 +373,7 @@ def edit_post(post_id):
 
 # update a single user
 @app.route('/update-user/<int:post_id>/', methods=["PUT"])
+@cross_origin()
 def edit_user(post_id):
     response = {}
 

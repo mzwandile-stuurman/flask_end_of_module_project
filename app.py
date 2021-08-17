@@ -158,6 +158,7 @@ def user_registration():
             return response
 
 @app.route('/user-login/', methods=["POST"])
+@cross_origin()
 def user_login():
     response = {}
     if request.method == "POST":
@@ -224,6 +225,7 @@ def create_Point_of_Sale():
 
 ### Creating products
 @app.route('/get-Point_of_Sales/', methods=["GET"])
+@cross_origin()
 def get_Point_of_Sales():
     response = {}
     with sqlite3.connect("Point_of_Sale.db") as conn:
@@ -242,6 +244,7 @@ def get_Point_of_Sales():
 
 # end-point to get all users
 @app.route('/get-users/',methods=['GET'])
+@cross_origin()
 def view_all_users():
     response = {}
     with sqlite3.connect("Point_of_Sale.db") as conn:
@@ -260,6 +263,7 @@ def view_all_users():
 
 # get a single user
 @app.route("/single-user/<int:user_id>", methods=['GET'])
+@cross_origin()
 def get_single_user(user_id):
     response = {}
     with sqlite3.connect("Point_of_Sale.db") as conn:
@@ -277,6 +281,7 @@ def get_single_user(user_id):
 
 # get single product
 @app.route("/single-product/<int:post_id>", methods=['GET'])
+@cross_origin()
 def get_single_product(post_id):
     response = {}
     with sqlite3.connect("Point_of_Sale.db") as conn:
@@ -295,6 +300,7 @@ def get_single_product(post_id):
 
 # delete product by id
 @app.route("/delete-product/<int:post_id>")
+@cross_origin()
 #@jwt_required()
 def delete_product(post_id):
     response = {}
@@ -306,7 +312,7 @@ def delete_product(post_id):
         response['message'] = "Product post deleted successfully."
     return response
 # get user by password
-@app.route("/get-user-password/<str:password>")
+@app.route("/get-user-password/<password>")
 @cross_origin()
 #@jwt_required()
 def delete_product_password(password):

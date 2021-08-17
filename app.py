@@ -122,6 +122,7 @@ def welcome_page():
 
 # end-point to register a user
 @app.route('/user-registration/', methods=["POST"])
+@jwt_required
 @cross_origin()
 def user_registration():
     response = {}
@@ -158,6 +159,7 @@ def user_registration():
             return response
 
 @app.route('/user-login/', methods=["POST"])
+@jwt_required()
 @cross_origin()
 def user_login():
     response = {}
@@ -193,7 +195,7 @@ def user_login():
 
 # create a product
 @app.route('/create-products/', methods=["POST"])
-#@jwt_required # authantication required
+@jwt_required # authantication required
 @cross_origin()
 def create_Point_of_Sale():
     response = {}
@@ -314,7 +316,7 @@ def delete_product(post_id):
 # get user by password
 @app.route("/get-user-password/<password>", methods=['GET'])
 @cross_origin()
-#@jwt_required()
+@jwt_required()
 def delete_product_password(password):
     response = {}
     with sqlite3.connect("Point_of_Sale.db") as conn:
@@ -327,7 +329,7 @@ def delete_product_password(password):
 
 
 @app.route("/delete-product-front/", methods=['POST'])
-#@jwt_required()
+@jwt_required()
 @cross_origin()
 def delete_product_front():
     response = {}

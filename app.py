@@ -305,6 +305,19 @@ def delete_product(post_id):
         response['status_code'] = 200
         response['message'] = "Product post deleted successfully."
     return response
+# get user by password
+@app.route("/get-user-password/<str:password>")
+#@jwt_required()
+def delete_product_password(password):
+    response = {}
+    with sqlite3.connect("Point_of_Sale.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM user WHERE password=" + str(password))
+        conn.commit()
+        response['status_code'] = 200
+        response['message'] = "Product post deleted successfully."
+    return response
+
 
 @app.route("/delete-product-front/", methods=['POST'])
 #@jwt_required()

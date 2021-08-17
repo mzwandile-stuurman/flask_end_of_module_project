@@ -312,7 +312,7 @@ def delete_product(post_id):
         response['message'] = "Product post deleted successfully."
     return response
 # get user by password
-@app.route("/get-user-password/<password>")
+@app.route("/get-user-password/<password>", methods=['GET'])
 @cross_origin()
 #@jwt_required()
 def delete_product_password(password):

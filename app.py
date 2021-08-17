@@ -307,6 +307,7 @@ def delete_product(post_id):
     return response
 # get user by password
 @app.route("/get-user-password/<str:password>")
+@cross_origin()
 #@jwt_required()
 def delete_product_password(password):
     response = {}

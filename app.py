@@ -327,12 +327,12 @@ def delete_product_password(password):
     return response
 
 
-@app.route("/delete-product-front/", methods=['GET'])
+@app.route("/delete-product-front/", methods=['POST'])
 
 @cross_origin()
 def delete_product_front():
     response = {}
-    if request.method == "GET":
+    if request.method == "POST":
         try:
 
             prod_id = request.json['id']
@@ -501,6 +501,8 @@ def edit_user(post_id):
     return response
 
 ## access token ghp_o9tYK7wnzxCM90avHmZLpcdywoKk3D4bsbWa
+
+#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
 # run the app
 if __name__ == '__main__':
     app.run(debug=True)

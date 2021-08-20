@@ -327,26 +327,48 @@ def delete_product_password(password):
     return response
 
 
-@app.route("/delete-product-front/", methods=['POST'])
+@app.route("/delete-product-front/", methods=['GET'])
 
 @cross_origin()
 def delete_product_front():
     response = {}
-    if request.method == "POST":
+    if request.method == "GET":
         try:
 
-            post_id = request.json['id']
+            prod_id = request.json['id']
             with sqlite3.connect("Point_of_Sale.db") as conn:
                 cursor = conn.cursor()
-                cursor.execute("DELETE FROM product WHERE id='" + str(post_id) + "'")
+                cursor.execute("DELETE * FROM product WHERE id='" + str(prod_id) + "'")
                 conn.commit()
                 response['status_code'] = 200
-                response['message'] = "Product post deleted successfully."
+                response['message'] = "Product deleted successfully."
             return response
         except Exception:
-            response['message'] = "You created an invalid product"
+            response['message'] = "Delete not successful"
             response['status_code'] = 400
             return response
+
+@app.route("/get-password/", methods=['GET'])
+
+@cross_origin()
+def delete_product_front():
+    response = {}
+    if request.method == "GET":
+        try:
+
+            password = request.json['password']
+            with sqlite3.connect("Point_of_Sale.db") as conn:
+                cursor = conn.cursor()
+                cursor.execute("SELECT * FROM user WHERE password='" + str(password) + "'")
+                conn.commit()
+                response['status_code'] = 200
+                response['message'] = "Profile selected successfully."
+            return response
+        except Exception:
+            response['message'] = "You selected an invalid profile"
+            response['status_code'] = 400
+            return response
+
 
 # update product by a particula column
 @app.route('/update-product/<int:post_id>/', methods=["PUT"])

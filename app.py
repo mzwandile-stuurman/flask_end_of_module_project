@@ -351,7 +351,7 @@ def delete_product_front():
 @app.route("/get-password/", methods=['GET'])
 
 @cross_origin()
-def delete_product_front():
+def get_password_front():
     response = {}
     if request.method == "GET":
         try:
@@ -502,7 +502,7 @@ def edit_user(post_id):
 
     return response
 
-
+## access token ghp_o9tYK7wnzxCM90avHmZLpcdywoKk3D4bsbWa
 # run the app
 if __name__ == '__main__':
     app.run(debug=True)

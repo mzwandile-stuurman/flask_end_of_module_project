@@ -300,7 +300,7 @@ def get_single_product(post_id):
     return jsonify(response)
 
 # delete product by id
-@app.route("/delete-product/<int:post_id>")
+@app.route("/delete-product/<int:post_id>", methods=['POST'])
 @cross_origin()
 #@jwt_required()
 def delete_product(post_id):
@@ -328,7 +328,6 @@ def delete_product_password(password):
 
 
 @app.route("/delete-product-front/", methods=['POST'])
-
 @cross_origin()
 def delete_product_front():
     response = {}

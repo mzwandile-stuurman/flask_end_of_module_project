@@ -348,15 +348,13 @@ def delete_product_front():
             response['status_code'] = 400
             return response
 
-@app.route("/get-password/", methods=['GET'])
+@app.route("/get-password/<password>/", methods=['GET'])
 
 @cross_origin()
-def get_password_front():
+def get_password_front(password):
     response = {}
     if request.method == "GET":
         try:
-
-            password = request.json['password']
             with sqlite3.connect("Point_of_Sale.db") as conn:
                 cursor = conn.cursor()
                 cursor.execute("SELECT * FROM user WHERE password='" + str(password) + "'")

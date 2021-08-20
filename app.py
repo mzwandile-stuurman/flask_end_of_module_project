@@ -358,9 +358,9 @@ def get_password_front(password):
             with sqlite3.connect("Point_of_Sale.db") as conn:
                 cursor = conn.cursor()
                 cursor.execute("SELECT * FROM user WHERE password='" + str(password) + "'")
-                conn.commit()
                 response['status_code'] = 200
                 response['message'] = "Profile selected successfully."
+                response['data'] = cursor.fetchall()
             return response
         except Exception:
             response['message'] = "You selected an invalid profile"
